@@ -1,0 +1,21 @@
+{
+  "key": "mobile",
+  "location": "data/users/users.txt",
+  "test": 2.3,
+  "property": {
+    "a": 1,
+    "b": [
+      "1",
+      "2",
+      "3"
+    ],
+    "c": [
+      {
+        "x": 1
+      },
+      {
+        "x": 2
+      }
+    ]
+  }
+}

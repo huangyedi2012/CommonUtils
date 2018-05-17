@@ -11,7 +11,9 @@ class JsonParser private() {
     val obj = JSON.parseFull(str)
     obj match {
       case Some(map: Map[String, Any]) => jsonMap = map
-      case None => throw new ClassCastException("parse json failed!")
+      case None => {
+        throw new ClassCastException("parse json failed!")
+      }
     }
   }
 
@@ -20,11 +22,14 @@ class JsonParser private() {
     jsonMap = jMap
   }
 
-  def getStringValue(key: String, defaultVal: String = "") = {
-    jsonMap.getOrElse(key, defaultVal).toString
+
+  def getStringValue(key: String) = {
+    val v = jsonMap.get(key)
+    if (v.isDefined) v.get.toString
+    else throw new Exception(s"no key named $key")
   }
 
-  def getIntValue(key: String, defaultVal: Int = 0) = {
+  def getIntValue(key: String) = {
     val v = jsonMap.get(key)
     if (v.isDefined) {
       val d = v.get.toString.toDouble
@@ -33,25 +38,25 @@ class JsonParser private() {
         throw new ClassCastException("not a double value")
       }
     }
-    else defaultVal
+    else throw new Exception(s"no key named $key")
   }
 
-  def getDoubleValue(key: String, defaultVal: Double = 0.0) = {
+  def getDoubleValue(key: String) = {
     val v = jsonMap.get(key)
     if (v.isDefined) v.get.toString.toDouble
-    else defaultVal
+    else throw new Exception(s"no key named $key")
   }
 
   def getList[T](key: String) = {
     val v = jsonMap.get(key)
     if (v.isDefined) v.get.asInstanceOf[List[T]]
-    else throw new ClassCastException("not a list type")
+    else throw new Exception(s"no key named $key")
   }
 
   def getJsonParser(key: String) = {
     val v = jsonMap.get(key)
     if (v.isDefined) new JsonParser(v.get.asInstanceOf[Map[String, Any]])
-    else throw new ClassCastException("not a JsonParser type")
+    else throw new Exception(s"no key named $key")
   }
 
   def getJsonParserList(key: String) = {
@@ -59,7 +64,7 @@ class JsonParser private() {
     if (v.isDefined)
       v.get.asInstanceOf[List[Map[String, Any]]]
         .map(jMap => new JsonParser(jMap))
-    else throw new ClassCastException("not a JsonParser List")
+    else throw new Exception(s"no key named $key")
   }
 
   def keySet = jsonMap.keySet
